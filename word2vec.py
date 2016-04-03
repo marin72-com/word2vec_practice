@@ -2,9 +2,26 @@
 from gensim.models import word2vec
 import logging
 import sys
+import csv
+import MeCab
+import re
+import os.path
 
 # output log
 logging.basicConfig(format="%(asctime)s : %(levelname)s : %(message)s", level=logging.INFO)
+
+def create_wakati(input_filename='tweets.csv', output_filename='tweets-wakati.txt'):
+    tagger = MeCab.Tagger('-Owakati')
+    fo = file (output_filename, 'w')
+    with open(input_filename, 'r') as f:
+        reader = csv.reader(f)
+        header = next(reader)
+        print header
+
+        for line in reader:
+            line = line[5]
+            line = re.sub('https?://.*', '', line)
+            fo.write(tagger.parse(line))
 
 class Word2VecModel:
     def __init__(self, filename='tweets-wakati.txt'):
@@ -29,11 +46,16 @@ class Word2VecModel:
             cnt += 1
 
 if __name__ == '__main__':
-    print "Load finish"
-
     filename = 'tweets-wakati.txt'
     if len(sys.argv) == 2:
         filename = sys.argv[1]
+
+    # もし、wakati ファイルがなかったら作る
+    if not os.path.isfile(filename):
+        create_wakati('tweets.csv', filename)
+
+    print "Load finish"
+
     wvm = Word2VecModel(filename)
     wvm.get_similar_words('twitter')
 
