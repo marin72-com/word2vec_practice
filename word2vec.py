@@ -52,7 +52,7 @@ if __name__ == '__main__':
 
     # もし、wakati ファイルがなかったら作る
     if not os.path.isfile(filename):
-        create_wakati('tweets.csv', filename)
+        create_wakati('tweets/tweets.csv', filename)
 
     print "Load finish"
 
